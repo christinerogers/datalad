@@ -1125,10 +1125,10 @@ def test_annex_ssh(repo_path, remote_1_path, remote_2_path):
     rm2 = AnnexRepo(remote_2_path, create=False)
 
     # check whether we are the first to use these sockets:
-    socket_1 = opj(str(ssh_manager.socket_dir),
-                   get_connection_hash('datalad-test', bundled=True))
-    socket_2 = opj(str(ssh_manager.socket_dir),
-                   get_connection_hash('localhost', bundled=True))
+    hash_1 = get_connection_hash('datalad-test', bundled=True)
+    socket_1 = opj(str(ssh_manager.socket_dir), hash_1)
+    hash_2 = get_connection_hash('localhost', bundled=True)
+    socket_2 = opj(str(ssh_manager.socket_dir), hash_2)
     datalad_test_was_open = exists(socket_1)
     localhost_was_open = exists(socket_2)
 
@@ -1140,7 +1140,12 @@ def test_annex_ssh(repo_path, remote_1_path, remote_2_path):
     gr.add_remote("ssh-remote-1", "ssh://datalad-test" + remote_1_path)
 
     # Now, make it an annex:
+    # Clear instances so that __init__() is invoked and
+    # _set_shared_connection() is called.
+    AnnexRepo._unique_instances.clear()
     ar = AnnexRepo(repo_path, create=False)
+    ok_(any(hash_1 in opt for opt in ar._annex_common_options))
+    ok_(all(hash_2 not in opt for opt in ar._annex_common_options))
 
     # connection to 'datalad-test' should be known to ssh manager:
     assert_in(socket_1, list(map(str, ssh_manager._connections)))
@@ -1186,6 +1191,8 @@ def test_annex_ssh(repo_path, remote_1_path, remote_2_path):
 
     # now, this connection to localhost was requested:
     assert_in(socket_2, list(map(str, ssh_manager._connections)))
+    ok_(any(hash_1 in opt for opt in ar._annex_common_options))
+    ok_(any(hash_2 in opt for opt in ar._annex_common_options))
     # but socket was not touched:
     if localhost_was_open:
         # FIXME: occasionally(?) fails in V6:
