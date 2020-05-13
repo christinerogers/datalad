@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# Add a section like the one below to ~/.ssh/config:
+#
+#   Host datalad-test
+#   HostName localhost
+#   User dl
+#   ControlMaster no
+#   StrictHostKeyChecking no
+#   Port 42241
+#
+# If a second instance is needed, append "2" to the Host value and
+# increment the port.
+
+set -eu
+
+pub="${1:-$HOME/.ssh/id_rsa.pub}"
+
+docker build -t dl-ssh:latest .
+
+tmpdir=$(readlink -f "${DATALAD_TESTS_TEMP_DIR:-${TMPDIR:-/tmp}}")
+mkdir -p "$tmpdir"
+
+start () {
+    name="$1"
+    port="$2"
+    authkeys_file=/home/dl/.ssh/authorized_keys
+    docker run --name "$name" -v "$tmpdir":/tmp -dit -p "$port":22 \
+           dl-ssh:latest
+    docker exec -i "$name" \
+           sh -c "cat >>$authkeys_file && chown dl:dl $authkeys_file" \
+           <"$pub"
+
+}
+
+start dl-ssh 42241
+# Set up another instance for the few tests that use two remotes.
+# Ideally the same source directory wouldn't be used for the mounts,
+# but DataLad tests rely on it.
+start dl-ssh2 42242
