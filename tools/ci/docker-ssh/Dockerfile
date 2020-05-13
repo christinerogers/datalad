@@ -21,7 +21,14 @@ RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN useradd -ms /bin/bash dl
+
+RUN useradd -ms /bin/bash notdl
+RUN chown -R notdl:notdl /home/notdl/
+RUN echo 'notdl:notdl' | chpasswd
+
+ARG UID=1000
+
+RUN useradd -ms /bin/bash -ou $UID dl
 RUN mkdir -p /home/dl/.ssh
 RUN chown -R dl:dl /home/dl/
 RUN echo 'dl:dl' | chpasswd
