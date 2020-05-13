@@ -8,8 +8,8 @@ OLD_PWD=$PWD
 BOBS_HOME=$(readlink -f "$(mktemp --tmpdir -d datalad_demo_bob.XXXX)")
 ALICES_HOME=$(readlink -f "$(mktemp --tmpdir -d datalad_demo_alice.XXXX)")
 
-# Fake an SSH server on this machine for the purpose of this demo
-SERVER_URL=localhost:$(readlink -f "$(mktemp --tmpdir -u -d datalad_demo_testpub.XXXX)")
+# Use testing Docker SSH target.
+SERVER_URL=datalad-test:$(readlink -f "$(mktemp --tmpdir -u -d datalad_demo_testpub.XXXX)")
 
 #% EXAMPLE START
 #
