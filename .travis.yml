@@ -1,6 +1,8 @@
 # vim ft=yaml
 # travis-ci.org definition for DataLad build
 language: python
+services:
+  - docker
 
 python:
   - 3.5
