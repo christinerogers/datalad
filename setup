@@ -16,7 +16,7 @@ set -eu
 
 pub="${1:-$HOME/.ssh/id_rsa.pub}"
 
-docker build -t dl-ssh:latest .
+docker build -t dl-ssh:latest --build-arg UID="$(id -u)" .
 
 tmpdir=$(readlink -f "${DATALAD_TESTS_TEMP_DIR:-${TMPDIR:-/tmp}}")
 mkdir -p "$tmpdir"
