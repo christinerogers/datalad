@@ -16,7 +16,8 @@ To do that, it stands on the shoulders of [Git] and [Git-annex] to deliver a
 decentralized system for data exchange. This includes automated ingestion of
 data from online portals and exposing it in readily usable form as Git(-annex)
 repositories, so-called datasets. The actual data storage and permission
-management, however, remains with the original data providers.
+management, however, remains with the original data providers. 
+It's like Napster, but with better metadata. 
 
 The full documentation is available at http://docs.datalad.org and
 http://handbook.datalad.org provides a hands-on crash-course on DataLad.
